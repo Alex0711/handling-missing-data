@@ -1,0 +1,11 @@
+name: handling_missing_data
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - numpy
+  - pandas
+  - matplotlib
+  - jupyter
