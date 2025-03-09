@@ -293,4 +293,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+data/raw/*
+!data/raw/missing_data_encoding_example.csv
+
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks,visualstudiocode,linux,macos,windows,venv,virtualenv
