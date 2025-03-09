@@ -1,7 +1,7 @@
 
 # Handling Missing Data
 
-This project aims to learn how to detect and handle missing data in datasets.
+This project aims to learn how to detect and handle missing data in datasets. It was created following a Platzi course, which used Deepnote.
 
 ## Requirements
 
