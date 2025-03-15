@@ -3,6 +3,10 @@
 
 This project aims to learn how to detect and handle missing data in datasets. It was created following a Platzi course, which used Deepnote.
 
+# ⚠️ Important Note
+
+This is my first data analysis project, and as such, it may not follow all the best practices in terms of code structure, documentation, or efficiency. I’m still learning and improving my skills in data analysis, notebooks, and machine learning. Feedback and suggestions are always welcome! 🙌
+
 ## Requirements
 
 To run this project, follow the steps below.
