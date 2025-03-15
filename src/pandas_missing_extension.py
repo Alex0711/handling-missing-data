@@ -4,6 +4,8 @@ import upsetplot
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from statsmodels.graphics.mosaicplot import mosaic
+
 
 try:
     del pd.DataFrame.missing
@@ -112,13 +114,14 @@ class MissingMethods:
         true_string: str = "Missing",
         false_string: str = "Not Missing",
         only_missing: bool = False,
+        suffix: str = "_NA",
     ) -> pd.DataFrame:
         return (
             self._obj
             .isna()
             .pipe(lambda df: df[df.columns[df.any()]] if only_missing else df)
             .replace({False: false_string, True: true_string})
-            .add_suffix("_NA")
+            .add_suffix(suffix)
         )
 
     def bind_shadow_matrix(
@@ -126,6 +129,7 @@ class MissingMethods:
         true_string: str = "Missing",
         false_string: str = "Not Missing",
         only_missing: bool = False,
+        suffix: str = "_NA",
     ) -> pd.DataFrame:
         return pd.concat(
             objs=[
@@ -133,7 +137,8 @@ class MissingMethods:
                 self._obj.missing.create_shadow_matrix(
                     true_string=true_string,
                     false_string=false_string,
-                    only_missing=only_missing
+                    only_missing=only_missing,
+                    suffix=suffix
                 )
             ],
             axis="columns"
@@ -266,4 +271,42 @@ class MissingMethods:
                     hue='nullity',
                 )
             )
+        )
+
+    def missing_mosaic_plot(self, incomplete_column, left_col, bot_col, figsize=(10, 10), missing_label="NA", not_missing_label="!NA", missing_color="r", not_missing_color="blue"):
+        fig, ax = plt.subplots(figsize=figsize)
+        assign_kwargs = {incomplete_column: lambda df: df[incomplete_column].isna().replace([True, False], [missing_label, not_missing_label])}
+        (
+            self._obj.select_columns(incomplete_column, left_col, bot_col)
+            .assign(**assign_kwargs)
+            .groupby(
+                [bot_col, left_col, incomplete_column], dropna=False, as_index=True
+            )
+            .size()
+            .pipe(
+                lambda df: mosaic(
+                    data=df,
+                    properties=lambda key: {"color": missing_color if "NA" in key else not_missing_color},
+                    ax=ax,
+                    horizontal=True,
+                    axes_label=True,
+                    title="",
+                    labelizer=lambda key: "",
+                )
+            )
+        )
+
+        ax.grid(False)
+
+    def scatter_imputation_plot(self, x, y, imputation_suffix="_imp", show_marginal=False, **kwargs):
+
+        x_imputed = f"{ x }{ imputation_suffix }"
+        y_imputed = f"{ y }{ imputation_suffix }"
+
+        plot_func = sns.scatterplot if not show_marginal else sns.jointplot
+
+        return (
+            self._obj[[x, y, x_imputed, y_imputed]]
+            .assign(is_imputed=lambda df: df[x_imputed] | df[y_imputed])
+            .pipe(lambda df: (plot_func(data=df, x=x, y=y, hue="is_imputed", **kwargs)))
         )
